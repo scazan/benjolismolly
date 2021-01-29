@@ -4,6 +4,7 @@
 
 Engine_BenjolisMolly : CroneEngine {
 
+  // Molly The Poly
 	classvar maxNumVoices = 10;
 	var voiceGroup;
 	var voiceList;
@@ -390,15 +391,16 @@ Engine_BenjolisMolly : CroneEngine {
 			voiceGroup.set(\timbre, timbre);
 		});
 
+
 		this.addCommand(\oscWaveShape, "i", { arg msg;
 			oscWaveShape = msg[1];
 			voiceGroup.set(\oscWaveShape, oscWaveShape);
 		});
 
-		this.addCommand(\pwMod, "f", { arg msg;
-			pwMod = msg[1];
-			voiceGroup.set(\pwMod, pwMod);
-		});
+    this.addCommand(\pwMod, "f", { arg msg;
+      pwMod = msg[1];
+      voiceGroup.set(\pwMod, pwMod);
+    });
 
 		this.addCommand(\pwModSource, "i", { arg msg;
 			pwModSource = msg[1];
