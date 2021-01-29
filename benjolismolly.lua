@@ -2,6 +2,7 @@
 local MusicUtil = require "musicutil"
 local MollyThePoly = require "benjolismolly/lib/molly_the_poly_engine"
 local sliderLayers = {0,0,0,0,0, 0,0,0,0,0}
+local sliderLayersParams = {{"pulse_width_mod", "chorus_mix"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},}
 
 engine.name = "BenjolisMolly"
 
@@ -105,46 +106,26 @@ local function midi_event(data)
       if msg.cc == 74 then
         set_timbre(msg.ch, msg.val / 127)
       elseif msg.cc >= 6 then
-        local toggleVal = (msg.val/127)
+        local toggleVal = math.floor(msg.val/127)
         local sliderIndex = msg.cc + ((msg.ch-14) * 5) - 5
 
         sliderLayers[sliderIndex] = toggleVal
 
-        if toggleVal == 0 then
-          local layerVal = params:get("pulse_width_mod")
-          print(layerVal)
-          midi_in_device:cc(msg.cc - 5, layerVal * 127, msg.ch)
-        else
-          midi_in_device:cc(msg.cc - 5, 20, msg.ch)
-        end
+        local layerVal = params:get_raw(sliderLayersParams[sliderIndex][toggleVal+1])
+        print(msg.cc-5, math.floor(layerVal * 127), msg.ch)
+        midi_in_device:cc(msg.cc - 5, math.floor(layerVal * 127), msg.ch)
 
       else
         local sliderIndex = msg.cc + ((msg.ch-14) * 5)
         local layerIndex = sliderLayers[sliderIndex]
 
-        if layerIndex == 1 then
-          setBenjolis(sliderIndex, msg.val/127)
-        else
-          setMolly(sliderIndex, msg.val/127)
-        end
+        params:set(sliderLayersParams[sliderIndex][layerIndex+1], msg.val/127)
       end
 
     end
 
   end
 
-end
-
-function setBenjolis(sliderIndex, val)
-  print("benjolis")
-  print(sliderIndex, val)
-end
-
-function setMolly(sliderIndex, val)
-  print("molly")
-  if sliderIndex == 1 then
-    params:set("pulse_width_mod", val)
-  end
 end
 
 function init()
