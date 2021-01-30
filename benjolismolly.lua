@@ -1,8 +1,23 @@
 
 local MusicUtil = require "musicutil"
 local MollyThePoly = require "benjolismolly/lib/molly_the_poly_engine"
-local sliderLayers = {0,0,0,0,0, 0,0,0,0,0}
-local sliderLayersParams = {{"pulse_width_mod", "chorus_mix"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},{"pulse_width_mod", "ring_mod_freq"},}
+local sliderLayers = {
+  0,0,0,0,0,
+  0,0,0,0,0,
+}
+
+local sliderLayersParams = {
+  {"pulse_width_mod", "chorus_mix"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+  {"pulse_width_mod", "ring_mod_freq"},
+}
 
 engine.name = "BenjolisMolly"
 
@@ -112,14 +127,13 @@ local function midi_event(data)
         sliderLayers[sliderIndex] = toggleVal
 
         local layerVal = params:get_raw(sliderLayersParams[sliderIndex][toggleVal+1])
-        print(msg.cc-5, math.floor(layerVal * 127), msg.ch)
         midi_in_device:cc(msg.cc - 5, math.floor(layerVal * 127), msg.ch)
 
       else
         local sliderIndex = msg.cc + ((msg.ch-14) * 5)
         local layerIndex = sliderLayers[sliderIndex]
 
-        params:set(sliderLayersParams[sliderIndex][layerIndex+1], msg.val/127)
+        params:set_raw(sliderLayersParams[sliderIndex][layerIndex+1], msg.val/127)
       end
 
     end
