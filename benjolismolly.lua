@@ -1,22 +1,23 @@
 
 local MusicUtil = require "musicutil"
 local MollyThePoly = require "benjolismolly/lib/molly_the_poly_engine"
+local Benjolis = require "benjolismolly/lib/benjolis_engine"
 local sliderLayers = {
   0,0,0,0,0,
   0,0,0,0,0,
 }
 
 local sliderLayersParams = {
-  {"pulse_width_mod", "chorus_mix"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
-  {"pulse_width_mod", "ring_mod_freq"},
+  {"osc_wave_shape", "setQ"},
+  {"pulse_width_mod", "setRunglerFilt"},
+  {"lp_filter_cutoff", "setLoop"},
+  {"lp_filter_resonance", "setOutSignal"},
+  {"lp_filter_cutoff", "setGain"},
+  {"lfo_freq", "setFreq1"},
+  {"lfo_wave_shape", "setFreq2"},
+  {"freq_mod_lfo", "setScale"},
+  {"lp_filter_mod_lfo", "setRungler1"},
+  {"amp_mod", "setRungler2"},
 }
 
 engine.name = "BenjolisMolly"
@@ -117,9 +118,12 @@ local function midi_event(data)
 
     -- CC
     elseif msg.type == "cc" then
+      print(msg.ch, msg.cc);
       -- Mod wheel
       if msg.cc == 74 then
         set_timbre(msg.ch, msg.val / 127)
+      elseif msg.ch == 16 and msg.cc == 36 then
+        params:set_raw("setAmp", msg.val/127)
       elseif msg.cc >= 6 then
         local toggleVal = math.floor(msg.val/127)
         local sliderIndex = msg.cc + ((msg.ch-14) * 5) - 5
@@ -162,6 +166,7 @@ function init()
   params:add_separator()
 
   MollyThePoly.add_params()
+  Benjolis.addParams()
 
   local orbit = 13.5
 
