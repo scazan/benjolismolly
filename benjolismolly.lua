@@ -8,16 +8,16 @@ local sliderLayers = {
 }
 
 local sliderLayersParams = {
-  {"osc_wave_shape", "setQ"},
-  {"pulse_width_mod", "setRunglerFilt"},
-  {"lp_filter_cutoff", "setLoop"},
-  {"lp_filter_resonance", "setOutSignal"},
-  {"lp_filter_cutoff", "setGain"},
-  {"lfo_freq", "setFreq1"},
-  {"lfo_wave_shape", "setFreq2"},
-  {"freq_mod_lfo", "setScale"},
-  {"lp_filter_mod_lfo", "setRungler1"},
-  {"amp_mod", "setRungler2"},
+  {"osc_wave_shape", "setQ", "shape", "Q"},
+  {"pulse_width_mod", "setRunglerFilt", "pwm", "filt"},
+  {"lp_filter_cutoff", "setLoop", "cutoff", "loop"},
+  {"lp_filter_resonance", "setOutSignal", "reson", "out"},
+  {"lp_filter_cutoff", "setGain", "cutoff", "gain"},
+  {"lfo_freq", "setFreq1", "lfo freq", "f1"},
+  {"lfo_wave_shape", "setFreq2","shape", "f2"},
+  {"freq_mod_lfo", "setScale", "fm lfo", "scale"},
+  {"lp_filter_mod_lfo", "setRungler1", "lpfilt", "r1"},
+  {"amp_mod", "setRungler2", "am", "r2"},
 }
 
 engine.name = "BenjolisMolly"
@@ -118,7 +118,7 @@ local function midi_event(data)
 
     -- CC
     elseif msg.type == "cc" then
-      print(msg.ch, msg.cc);
+      -- print(msg.ch, msg.cc);
       -- Mod wheel
       if msg.cc == 74 then
         set_timbre(msg.ch, msg.val / 127)
@@ -187,18 +187,17 @@ function redraw()
   screen.aa(1)
 
   screen.level(15)
-  screen.move(3, 58)
-  screen.text("fuck fuck fuck fuck fuck")
-  screen.move(3, 48)
-  screen.text("fuck fuck fuck fuck fuck")
-  screen.move(3, 38)
-  screen.text("fuck fuck fuck fuck fuck")
-  screen.move(3, 28)
-  screen.text("fuck fuck fuck fuck fuck")
-  screen.move(3, 18)
-  screen.text("fuck fuck fuck fuck fuck")
-  screen.move(3, 8)
-  screen.text("fuck fuck fuck fuck fuck")
+  screen.font_size(8)
+
+  for i = 1, 5 do
+    screen.move(3, 8 + ((i-1)*10))
+    screen.text(sliderLayersParams[i][3] .." / ".. sliderLayersParams[i][4])
+  end
+
+  for i = 6, 10 do
+    screen.move(70, 8 + ((i-6)*10))
+    screen.text(sliderLayersParams[i][3] .." / ".. sliderLayersParams[i][4])
+  end
   screen.fill()
 
   screen.update()
