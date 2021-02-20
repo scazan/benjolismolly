@@ -118,12 +118,15 @@ local function midi_event(data)
 
     -- CC
     elseif msg.type == "cc" then
-      -- print(msg.ch, msg.cc);
+      -- print(msg.ch, msg.cc, msg.val);
       -- Mod wheel
       if msg.cc == 74 then
         set_timbre(msg.ch, msg.val / 127)
       elseif msg.ch == 16 and msg.cc == 36 then
         params:set_raw("setAmp", msg.val/127)
+      elseif msg.ch == 16 and msg.cc == 10 then
+        print(msg.val/127)
+        engine.noteHold(msg.val/127)
       elseif msg.cc >= 6 then
         local toggleVal = math.floor(msg.val/127)
         local sliderIndex = msg.cc + ((msg.ch-14) * 5) - 5

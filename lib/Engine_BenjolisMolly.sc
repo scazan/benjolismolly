@@ -51,6 +51,7 @@ Engine_BenjolisMolly : CroneEngine {
 	var ringModFade = 0;
 	var ringModMix = 0;
 	var chorusMix = 0;
+	var voiceHold = false;
 
   // Benjolis
   var benjolisSynth;
@@ -321,12 +322,14 @@ Engine_BenjolisMolly : CroneEngine {
 		});
 
 		// noteOff(id)
-		this.addCommand(\noteOff, "i", { arg msg;
-			var voice = voiceList.detect{arg v; v.id == msg[1]};
-			if(voice.notNil, {
-				voice.theSynth.set(\gate, 0);
-				voice.gate = 0;
-			});
+    this.addCommand(\noteOff, "i", { arg msg;
+      if (voiceHold != true, {
+        var voice = voiceList.detect{arg v; v.id == msg[1]};
+        if(voice.notNil, {
+          voice.theSynth.set(\gate, 0);
+          voice.gate = 0;
+        });
+      });
 		});
 
 		// noteOffAll()
@@ -352,8 +355,16 @@ Engine_BenjolisMolly : CroneEngine {
 			voiceList.clear;
 		});
 
-		// pitchBend(id, ratio)
-		this.addCommand(\pitchBend, "if", { arg msg;
+    this.addCommand(\noteHold, "i", { arg msg;
+      if (msg[1].asInteger == 1, {
+        voiceHold = true;
+      }, {
+        voiceHold = false;
+      });
+    });
+
+    // pitchBend(id, ratio)
+    this.addCommand(\pitchBend, "if", { arg msg;
 			var voice = voiceList.detect{arg v; v.id == msg[1]};
 			if(voice.notNil, {
 				voice.theSynth.set(\pitchBendRatio, msg[2]);
@@ -376,8 +387,10 @@ Engine_BenjolisMolly : CroneEngine {
 
 		// pressureAll(pressure)
 		this.addCommand(\pressureAll, "f", { arg msg;
-			channelPressure = msg[1];
-			voiceGroup.set(\pressure, channelPressure);
+      if (voiceHold != true, {
+        channelPressure = msg[1];
+        voiceGroup.set(\pressure, channelPressure);
+      });
 		});
 
 		// timbre(id, timbre)
